@@ -1,5 +1,63 @@
-export type Post = { slug: string; number: string; category: string; title: string; summary: string; readTime: string; motif: string; takeaway: string; sections: { heading: string; paragraphs: string[] }[]; sources: { label: string; url: string }[] };
+export type Post = { date?: string; slug: string; number: string; category: string; title: string; summary: string; readTime: string; motif: string; takeaway: string; sections: { heading: string; paragraphs: string[] }[]; sources: { label: string; url: string }[] };
 export const posts: Post[] = [
+{
+  "slug": "building-a-crud-api",
+  "number": "04",
+  "category": "APIs",
+  "title": "One movie, four operations: building a CRUD API.",
+  "summary": "A movie watchlist makes the relationship between a React interface, an Express server, and MongoDB easier to follow.",
+  "readTime": "4 min read",
+  "motif": "api",
+  "date": "November 9, 2026",
+  "takeaway": "Define the data and request contract first, then make each interface action follow that contract.",
+  "sections": [
+    {
+      "heading": "Start with one useful record",
+      "paragraphs": [
+        "A static journal publishes content when the site is built. A watchlist has a different need: someone should be able to add a movie and change its status without rebuilding the website. That is where an API and a database become useful.",
+        "For a small movie record, I would start with a title, a genre, and a status such as Planned or Watched. The server should also assign a created_at timestamp. Keeping that timestamp on the server prevents a browser form from deciding when a record was created. MongoDB stores the record, while the API controls which changes are allowed."
+      ]
+    },
+    {
+      "heading": "Give each operation an address and method",
+      "paragraphs": [
+        "CRUD means create, read, update, and delete. For a watchlist, GET /api/movies returns the collection and POST /api/movies creates a record. PATCH /api/movies/:id changes selected fields on an existing movie, while DELETE /api/movies/:id removes it. A GET request to /api/movies/:id can retrieve one movie.",
+        "Express matches both the request path and its HTTP method to a handler. That lets the same collection address support reading and creating without confusing the two actions. Keeping API addresses under /api also separates them from browser pages such as /about. An unknown API address should return a JSON error instead of the React page."
+      ]
+    },
+    {
+      "heading": "Validate before saving",
+      "paragraphs": [
+        "A form can catch an empty title before a request is sent, but the server still needs to check it. Requests can come from Postman, another interface, or a script. I would trim text, limit its length, accept only known status values, and reject fields the client is not allowed to change.",
+        "Responses should explain what happened. A successful creation can return 201 and the saved movie. Invalid input can return 400; a valid identifier with no matching movie can return 404. A database failure needs an error response too, without exposing connection strings or internal details. These distinctions make debugging more useful than receiving the same generic response for everything."
+      ]
+    },
+    {
+      "heading": "Connect the interface carefully",
+      "paragraphs": [
+        "React can call the API with fetch and render the returned records. A resolved fetch promise does not automatically mean the request succeeded: the code must check response.ok before treating the response as successful. While a save is pending, disabling the submit button helps prevent duplicate requests.",
+        "The interface also needs separate loading, empty, and error states. An empty watchlist should invite the user to add a movie; a failed request should offer a retry. After an edit, the screen should use the saved record returned by the server. If a save fails, keeping the entered values lets the user correct or retry the action."
+      ]
+    },
+    {
+      "heading": "Test the whole trip",
+      "paragraphs": [
+        "A useful test sequence is to create a movie, retrieve it, mark it Watched, refresh the page, and finally delete it. The refresh matters because it checks persistence rather than just a change in React state. I would also try an empty title, an unsupported status, a malformed identifier, and a movie that no longer exists.",
+        "Before deploying, database credentials belong in server environment variables, never in browser code or the GitHub archive. After deploying, repeat the same CRUD sequence using the public URL. The goal is a complete round trip: an interface action reaches the API, the database changes, and the response produces the correct screen."
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "Express — Routing",
+      "url": "https://expressjs.com/en/guide/routing/"
+    },
+    {
+      "label": "MDN — Using the Fetch API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch"
+    }
+  ]
+},
   { slug: 'following-a-request', number: '01', category: 'Architecture', title: 'Following a request, from browser to screen.', summary: 'The web feels less mysterious when you follow one request through the systems that make a page appear.', readTime: '3 min read', motif: 'request', takeaway: 'When a page fails, follow the request before changing the code.', sections: [
     { heading: 'Start with the journey', paragraphs: ['A website can look like one finished thing, but several systems cooperate to make it appear. The browser is the client: it asks for resources and turns the responses into a page. A server responds to those requests. Between them sits the network that carries the information.', 'For a typical first visit, the browser needs to locate the host associated with the domain name. DNS helps translate that name into an IP address. The browser can then establish a connection and request the page over HTTP, usually secured with HTTPS. Caching and connection reuse can shorten this journey on later visits.'] },
     { heading: 'The response is only the beginning', paragraphs: ['Receiving HTML is not the same as having a complete page. The browser also needs any linked stylesheets, scripts, and images. It parses the HTML into a document structure and uses CSS to determine how that structure should look. JavaScript can then add behavior, such as filtering a list of journal entries.', 'That separation is useful when debugging. A page with readable text but no styling might have a failed CSS request. A working layout with an unresponsive button points toward a different part of the system. The symptom gives me a place to start, rather than a reason to rewrite everything.'] },
