@@ -1,6 +1,80 @@
 export type Post = { date?: string; slug: string; number: string; category: string; title: string; summary: string; readTime: string; motif: string; takeaway: string; sections: { heading: string; paragraphs: string[] }[]; sources: { label: string; url: string }[] };
 export const posts: Post[] = [
 {
+  "slug": "from-web-to-native",
+  "number": "05",
+  "category": "React Native",
+  "title": "One watchlist, two interfaces: moving from web to native.",
+  "summary": "React Native brings familiar React ideas to mobile screens while an existing API keeps the data shared.",
+  "readTime": "4 min read",
+  "motif": "native",
+  "date": "November 16, 2026",
+  "takeaway": "Reuse the data contract and React concepts, then design the interaction for the device.",
+  "sections": [
+    {
+      "heading": "Keep the API, rethink the screen",
+      "paragraphs": [
+        "A movie watchlist is a useful way to understand multiplatform development. On the web, a reader can add a movie, change its status, or remove it. A mobile app should preserve that useful flow, but it does not need to copy the browser layout pixel for pixel.",
+        "ScreenList already separates its React interface from an Express API and MongoDB. A React Native client can use that same API. The database remains behind the server, and both clients exchange movie records through HTTP requests. Adding a mobile interface does not require a second database or exposing the database connection string to the phone."
+      ]
+    },
+    {
+      "heading": "Familiar React, different building blocks",
+      "paragraphs": [
+        "Components, props, state, and effects carry over from React. The interface primitives change: React Native uses components such as View, Text, TextInput, and FlatList instead of HTML elements. A FlatList can render the movie collection, with each record's ID used as a stable key.",
+        "Styling also needs attention. StyleSheet creates named JavaScript style objects; it does not load a browser stylesheet. I would keep the watchlist's colors and visual identity while adapting spacing, text size, and controls for a small touch screen. A form must remain usable when the keyboard opens, and content should avoid the device's system areas."
+      ]
+    },
+    {
+      "heading": "Make each action a complete round trip",
+      "paragraphs": [
+        "The mobile app can use GET /api/movies to load records, POST to create a movie, PATCH /api/movies/:id to update it, and DELETE to remove it. The interface should check the response status before treating any operation as successful. A failed HTTP request can still produce a resolved fetch promise.",
+        "Separate loading, empty, and error states explain what is happening. During a save, disabling the submit action helps avoid duplicate requests. If it fails, keeping the entered text makes retrying less frustrating. After success, using the record returned by the API keeps the visible state consistent with what was saved."
+      ]
+    },
+    {
+      "heading": "Navigation and connectivity are part of the design",
+      "paragraphs": [
+        "A mobile flow might have a watchlist screen, a movie detail screen, and a form for adding or editing. React Navigation can manage a stack of screens and provide expected back behavior. Passing a movie ID between screens gives the destination a clear way to identify the record it needs.",
+        "A phone can lose service while the app is open. Expo Network can report connection state, but a connection alone does not guarantee that the API is reachable. Every request still needs error handling and a useful retry path. For a first version, clearly explaining that a change was not saved is better than implying offline edits will synchronize when no synchronization system exists."
+      ]
+    },
+    {
+      "heading": "Test on the device, not only in the browser",
+      "paragraphs": [
+        "A physical phone needs an API address it can reach. Localhost on the phone points to the phone itself, not the development computer. A deployed HTTPS API avoids that particular mismatch, while server secrets remain in server configuration.",
+        "The final check should follow the whole user journey: create a movie, reload the list, edit its status, reopen it, and delete it. Then try invalid input and a lost connection. Test navigation, keyboard behavior, and layout on the intended mobile platforms. Sharing React knowledge makes the transition easier, but a reliable mobile experience still requires deliberate testing."
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "label": "React Native — Core Components and Native Components",
+      "url": "https://reactnative.dev/docs/intro-react-native-components"
+    },
+    {
+      "label": "React Native — FlatList",
+      "url": "https://reactnative.dev/docs/flatlist"
+    },
+    {
+      "label": "React Native — StyleSheet",
+      "url": "https://reactnative.dev/docs/stylesheet"
+    },
+    {
+      "label": "React Navigation — Hello React Navigation",
+      "url": "https://reactnavigation.org/docs/hello-react-navigation/"
+    },
+    {
+      "label": "Expo — Network",
+      "url": "https://docs.expo.dev/versions/latest/sdk/network/"
+    },
+    {
+      "label": "MDN — Using the Fetch API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch"
+    }
+  ]
+},
+{
   "slug": "building-a-crud-api",
   "number": "04",
   "category": "APIs",
